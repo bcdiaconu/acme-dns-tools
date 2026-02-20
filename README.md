@@ -8,13 +8,13 @@ dns-proxy is a Go project for managing DNS TXT records via cPanel, supporting bo
 
 - HTTP API (`dns-proxy-api`): Exposes `/set_txt` endpoint for remote TXT record management
 - CLI tool (`dns-proxy-cli`): Allows local DNS TXT record management via command line, ideal for certbot hooks
-- Reads configuration from `/etc/dns-proxy-api.conf` (API) or `/etc/dns-proxy-cli.conf` (CLI)
+- Reads configuration from `/etc/acme-dns-tools/dns-proxy-api.conf` (API) or `/etc/acme-dns-tools/dns-proxy-cli.conf` (CLI)
 
 ## Configuration
 
 Create a config file for each app:
 
-- For the HTTP API (`dns-proxy-api`): `/etc/dns-proxy-api.conf`
+- For the HTTP API (`dns-proxy-api`): `/etc/acme-dns-tools/dns-proxy-api.conf`
 
   ```ini
   API_KEY=your_api_key_here
