@@ -47,6 +47,10 @@ func main() {
 		certsBaseDir = defaultCertsBaseDir
 	}
 
+	// --- TLS (optional) ---
+	tlsCert := cfg["TLS_CERT"]
+	tlsKey := cfg["TLS_KEY"]
+
 	// --- /set_txt handler (existing) ---
 	http.HandleFunc("/set_txt", func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
@@ -82,6 +86,11 @@ func main() {
 	// --- /certs/ handler (new: pull-based cert serving) ---
 	http.Handle("/certs/", api.CertsHandler(certBearerToken, certDNSAllowlist, certsBaseDir))
 
-	log.Println("dns-proxy API listening on :5000...")
-	log.Fatal(http.ListenAndServe(":5000", nil))
+	if tlsCert != "" && tlsKey != "" {
+		log.Println("dns-proxy API listening on :5000 (TLS)...")
+		log.Fatal(http.ListenAndServeTLS(":5000", tlsCert, tlsKey, nil))
+	} else {
+		log.Println("dns-proxy API listening on :5000 (plain HTTP)...")
+		log.Fatal(http.ListenAndServe(":5000", nil))
+	}
 }

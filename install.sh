@@ -118,6 +118,12 @@ CERT_DNS_ALLOWLIST=REPLACE_WITH_ALLOWED_HOSTNAME
 # Optional: override the base directory for certificate files
 # Defaults to /etc/letsencrypt/live if omitted
 # CERT_BASE_DIR=/etc/letsencrypt/live
+
+# --- TLS for the API listener itself ---
+# Set both to enable HTTPS on port 5000; omit to run plain HTTP.
+# These are the cert/key for the acme-proxy host (this machine), not for served certs.
+# TLS_CERT=/etc/letsencrypt/live/acme.iveronsoft.ro/fullchain.pem
+# TLS_KEY=/etc/letsencrypt/live/acme.iveronsoft.ro/privkey.pem
 EOF
     chmod 600 "$API_CONF"
     ok "Created: $API_CONF"
