@@ -1,42 +1,53 @@
 package main
 
 import (
-	"bufio"
+	"dns-proxy/internal/api"
+	"dns-proxy/internal/config"
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
 	"strings"
 )
 
-func loadAPIKey(path string) string {
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatalf("Failed to open config file: %v", err)
-	}
-	defer file.Close()
-	var apiKey string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) == 2 && strings.TrimSpace(parts[0]) == "API_KEY" {
-			apiKey = strings.TrimSpace(parts[1])
-		}
-	}
+const configPath = "/etc/dns-proxy-api.conf"
+const defaultCertsBaseDir = "/etc/letsencrypt/live"
+
+func main() {
+	cfg := config.LoadConfig(configPath)
+
+	// --- DNS management API key (existing) ---
+	apiKey := cfg["API_KEY"]
 	if apiKey == "" {
 		log.Fatal("API_KEY not found in config file")
 	}
-	return apiKey
-}
 
-func main() {
-	apiKey := loadAPIKey("/etc/dns-proxy-api.conf")
+	// --- Cert serving: Bearer token ---
+	certBearerToken := cfg["CERT_BEARER_TOKEN"]
+	if certBearerToken == "" {
+		log.Fatal("CERT_BEARER_TOKEN not found in config file")
+	}
 
+	// --- Cert serving: DNS allowlist (comma-separated hostnames, FCrDNS) ---
+	certDNSAllowlistRaw := cfg["CERT_DNS_ALLOWLIST"]
+	if certDNSAllowlistRaw == "" {
+		log.Fatal("CERT_DNS_ALLOWLIST not found in config file")
+	}
+	var certDNSAllowlist []string
+	for _, h := range strings.Split(certDNSAllowlistRaw, ",") {
+		h = strings.TrimSpace(h)
+		if h != "" {
+			certDNSAllowlist = append(certDNSAllowlist, h)
+		}
+	}
+
+	// --- Cert serving: base directory (optional, defaults to letsencrypt live) ---
+	certsBaseDir := cfg["CERT_BASE_DIR"]
+	if certsBaseDir == "" {
+		certsBaseDir = defaultCertsBaseDir
+	}
+
+	// --- /set_txt handler (existing) ---
 	http.HandleFunc("/set_txt", func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		expected := "Bearer " + apiKey
@@ -67,6 +78,9 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("TXT record set"))
 	})
+
+	// --- /certs/ handler (new: pull-based cert serving) ---
+	http.Handle("/certs/", api.CertsHandler(certBearerToken, certDNSAllowlist, certsBaseDir))
 
 	log.Println("dns-proxy API listening on :5000...")
 	log.Fatal(http.ListenAndServe(":5000", nil))
