@@ -1,4 +1,4 @@
-# dns-proxy
+# dns-proxy-tools
 
 dns-proxy is a Go project for managing DNS TXT records via cPanel, supporting both an HTTP API and a CLI tool for secure automation (e.g., Let's Encrypt DNS-01 challenges).
 
