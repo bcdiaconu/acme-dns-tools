@@ -81,7 +81,7 @@ func main() {
 	}
 
 	// Load cPanel config
-	cfg := loadCPanelConfig("/etc/dns-proxy-cli.conf")
+	cfg := loadCPanelConfig("/etc/acme-dns-tools/dns-proxy-cli.conf")
 	cpCfg, err := cpanel.NewCPanelConfig(cfg)
 	if err != nil {
 		log.Printf("%v", err)

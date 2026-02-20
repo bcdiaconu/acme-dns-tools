@@ -35,7 +35,7 @@ func loadAPIKey(path string) string {
 }
 
 func main() {
-	apiKey := loadAPIKey("/etc/dns-proxy.conf")
+	apiKey := loadAPIKey("/etc/acme-dns-tools/dns-proxy.conf")
 
 	http.HandleFunc("/set_txt", func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-const configPath = "/etc/dns-proxy-api.conf"
+const configPath = "/etc/acme-dns-tools/dns-proxy-api.conf"
 const defaultCertsBaseDir = "/etc/letsencrypt/live"
 
 func main() {

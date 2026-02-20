@@ -4,8 +4,9 @@
 set -e
 
 INSTALL_DIR="/usr/local/bin"
-API_CONF="/etc/dns-proxy-api.conf"
-CLI_CONF="/etc/dns-proxy-cli.conf"
+CONF_DIR="/etc/acme-dns-tools"
+API_CONF="$CONF_DIR/dns-proxy-api.conf"
+CLI_CONF="$CONF_DIR/dns-proxy-cli.conf"
 OPENRC_INIT="/etc/init.d/dns-proxy-api"
 SYSTEMD_UNIT="/etc/systemd/system/dns-proxy-api.service"
 SERVICE_NAME="dns-proxy-api"
@@ -87,6 +88,9 @@ install_bins() {
 # ============================================================
 
 install_configs() {
+  mkdir -p "$CONF_DIR"
+  chmod 700 "$CONF_DIR"
+
   # --- dns-proxy-api.conf ---
   if [ -f "$API_CONF" ]; then
     info "Config already exists (not overwritten): $API_CONF"
@@ -94,7 +98,7 @@ install_configs() {
     info "Creating sample config: $API_CONF"
     cat > "$API_CONF" << 'EOF'
 # dns-proxy-api configuration
-# /etc/dns-proxy-api.conf
+# /etc/acme-dns-tools/dns-proxy-api.conf
 
 # --- DNS management API (existing) ---
 # Bearer token for the /set_txt endpoint (used by certbot hooks on remote hosts)
@@ -127,7 +131,7 @@ EOF
     info "Creating sample config: $CLI_CONF"
     cat > "$CLI_CONF" << 'EOF'
 # dns-proxy-cli configuration
-# /etc/dns-proxy-cli.conf
+# /etc/acme-dns-tools/dns-proxy-cli.conf
 
 # cPanel base URL (include port, e.g. :2083)
 cpanel_url=https://YOUR_CPANEL_HOST:2083
