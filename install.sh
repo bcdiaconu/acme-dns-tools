@@ -15,10 +15,10 @@ SERVICE_NAME="dns-proxy-api"
 # Helpers
 # ============================================================
 
-info()    { echo "[INFO]  $*"; }
-ok()      { echo "[OK]    $*"; }
-warn()    { echo "[WARN]  $*"; }
-die()     { echo "[ERROR] $*" >&2; exit 1; }
+info()    { echo "ℹ️  $*"; }
+ok()      { echo "✅ $*"; }
+warn()    { echo "⚠️  $*"; }
+die()     { echo "❌ $*" >&2; exit 1; }
 
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "Required command not found: $1"
