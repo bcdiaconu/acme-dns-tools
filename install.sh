@@ -152,6 +152,12 @@ EOF
     ok "Created: $CLI_CONF"
     warn "Edit $CLI_CONF with your cPanel credentials."
   fi
+
+  # Harden the config directory: dirs 700, all files 600, owned by root
+  find "$CONF_DIR" -type d -exec chmod 700 {} +
+  find "$CONF_DIR" -type f -exec chmod 600 {} +
+  chown -R root:root "$CONF_DIR"
+  ok "Permissions hardened: $CONF_DIR"
   echo ""
 }
 
