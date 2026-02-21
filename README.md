@@ -121,7 +121,7 @@ dns-proxy-api start
 
    - Endpoint: `POST /set_txt`
    - Headers:
-     - `Authorization: Bearer <API_KEY>`
+     - `Authorization: Bearer <DNS_RESOLVER_API_TOKEN>`
      - `Content-Type: application/json`
    - Body:
 
@@ -137,7 +137,7 @@ dns-proxy-api start
 
    ```sh
    curl -X POST http://localhost:5000/set_txt \
-     -H "Authorization: Bearer your_api_key_here" \
+     -H "Authorization: Bearer your_dns_resolver_api_token" \
      -H "Content-Type: application/json" \
      -d '{"domain":"example.com","key":"_acme-challenge","value":"txt_value_here"}'
    ```

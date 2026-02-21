@@ -17,9 +17,9 @@ func main() {
 	cfg := config.LoadConfig(configPath)
 
 	// --- DNS management API key (existing) ---
-	apiKey := cfg["API_KEY"]
+	apiKey := cfg["DNS_RESOLVER_API_TOKEN"]
 	if apiKey == "" {
-		log.Fatal("API_KEY not found in config file")
+		log.Fatal("DNS_RESOLVER_API_TOKEN not found in config file")
 	}
 
 	// --- Cert serving: Bearer token ---
