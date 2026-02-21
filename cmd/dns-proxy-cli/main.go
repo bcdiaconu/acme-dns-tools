@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"dns-proxy/internal/commands"
-	"dns-proxy/internal/cpanel"
+	"acme-dns-tools/internal/commands"
+	"acme-dns-tools/internal/cpanel"
 )
 
 func loadCPanelConfig(path string) map[string]string {

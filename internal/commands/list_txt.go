@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"dns-proxy/internal/cpanel"
+	"acme-dns-tools/internal/cpanel"
 	"fmt"
 )
 

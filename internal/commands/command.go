@@ -1,6 +1,6 @@
 package commands
 
-import "dns-proxy/internal/cpanel"
+import "acme-dns-tools/internal/cpanel"
 
 // Command represents a DNS operation command
 type Command interface {

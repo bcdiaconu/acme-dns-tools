@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"dns-proxy/internal/api"
-	"dns-proxy/internal/config"
-	"dns-proxy/internal/cpanel"
+	"acme-dns-tools/internal/api"
+	"acme-dns-tools/internal/config"
+	"acme-dns-tools/internal/cpanel"
 )
 
 func loadToken(path string) string {

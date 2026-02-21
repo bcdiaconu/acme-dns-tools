@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dns-proxy/internal/api"
-	"dns-proxy/internal/config"
+	"acme-dns-tools/internal/api"
+	"acme-dns-tools/internal/config"
 	"encoding/json"
 	"log"
 	"net/http"
