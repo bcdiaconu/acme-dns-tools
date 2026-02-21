@@ -1,4 +1,4 @@
-# dns-proxy
+# dns-proxy-tools
 
 dns-proxy is a Go project for managing DNS TXT records via cPanel, supporting both an HTTP API and a CLI tool for secure automation (e.g., Let's Encrypt DNS-01 challenges).
 
@@ -8,16 +8,16 @@ dns-proxy is a Go project for managing DNS TXT records via cPanel, supporting bo
 
 - HTTP API (`dns-proxy-api`): Exposes `/set_txt` endpoint for remote TXT record management
 - CLI tool (`dns-proxy-cli`): Allows local DNS TXT record management via command line, ideal for certbot hooks
-- Reads configuration from `/etc/dns-proxy-api.conf` (API) or `/etc/dns-proxy-cli.conf` (CLI)
+- Reads configuration from `/etc/acme-dns-tools/dns-proxy-api.conf` (API) or `/etc/acme-dns-tools/dns-proxy-cli.conf` (CLI)
 
 ## Configuration
 
 Create a config file for each app:
 
-- For the HTTP API (`dns-proxy-api`): `/etc/dns-proxy-api.conf`
+- For the HTTP API (`dns-proxy-api`): `/etc/acme-dns-tools/dns-proxy-api.conf`
 
   ```ini
-  API_KEY=your_api_key_here
+  DNS_RESOLVER_API_TOKEN=your_api_token_here
   ```
 
 - For the CLI (`dns-proxy-cli`): `/etc/dns-proxy-cli.conf`
@@ -28,7 +28,7 @@ Create a config file for each app:
   cpanel_apikey=cpanel_api_token
   ```
 
-- `API_KEY`: The Bearer token required for API requests (only for API)
+- `DNS_RESOLVER_API_TOKEN`: The Bearer token required for API requests (only for API)
 - `cpanel_url`, `cpanel_user`, `cpanel_apikey`: cPanel credentials (only for CLI)
 
 ## Build
@@ -121,7 +121,7 @@ dns-proxy-api start
 
    - Endpoint: `POST /set_txt`
    - Headers:
-     - `Authorization: Bearer <API_KEY>`
+     - `Authorization: Bearer <DNS_RESOLVER_API_TOKEN>`
      - `Content-Type: application/json`
    - Body:
 
@@ -137,7 +137,7 @@ dns-proxy-api start
 
    ```sh
    curl -X POST http://localhost:5000/set_txt \
-     -H "Authorization: Bearer your_api_key_here" \
+     -H "Authorization: Bearer your_dns_resolver_api_token" \
      -H "Content-Type: application/json" \
      -d '{"domain":"example.com","key":"_acme-challenge","value":"txt_value_here"}'
    ```

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"dns-proxy/internal/cpanel"
+	"acme-dns-tools/internal/cpanel"
 )
 
 // SetTxtCommand implements the set-txt command

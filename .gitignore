@@ -1,6 +1,9 @@
 # Binaries
 /dns-proxy-api
+/dns-proxy-api.exe
 /dns-proxy-cli
+/dns-proxy-cli.exe
+*.exe
 
 # Build output
 *.out

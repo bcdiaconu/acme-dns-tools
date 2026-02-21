@@ -1,8 +1,8 @@
 package cpanel
 
 import (
-	"dns-proxy/internal/cpanel/commands"
-	"dns-proxy/internal/cpanel/queries"
+	"acme-dns-tools/internal/cpanel/commands"
+	"acme-dns-tools/internal/cpanel/queries"
 )
 
 // CPanelService provides CQRS interface for cPanel operations

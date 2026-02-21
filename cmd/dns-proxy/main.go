@@ -2,15 +2,18 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"strings"
+
+	"acme-dns-tools/internal/api"
+	"acme-dns-tools/internal/config"
+	"acme-dns-tools/internal/cpanel"
 )
 
-func loadAPIKey(path string) string {
+func loadToken(path string) string {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Failed to open config file: %v", err)
@@ -24,49 +27,36 @@ func loadAPIKey(path string) string {
 			continue
 		}
 		parts := strings.SplitN(line, "=", 2)
-		if len(parts) == 2 && strings.TrimSpace(parts[0]) == "API_KEY" {
+		if len(parts) == 2 && strings.TrimSpace(parts[0]) == "DNS_RESOLVER_API_TOKEN" {
 			apiKey = strings.TrimSpace(parts[1])
 		}
 	}
 	if apiKey == "" {
-		log.Fatal("API_KEY not found in config file")
+		log.Fatal("DNS_RESOLVER_API_TOKEN not found in config file")
 	}
 	return apiKey
 }
 
 func main() {
-	apiKey := loadAPIKey("/etc/dns-proxy.conf")
+	apiToken := loadToken("/etc/acme-dns-tools/dns-proxy-api.conf")
 
-	http.HandleFunc("/set_txt", func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		expected := "Bearer " + apiKey
-		if authHeader != expected {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
+	// Adapter that implements api.TxtRecordSetter by using internal cPanel client
+	cfgMap := config.LoadConfig("/etc/acme-dns-tools/dns-proxy-cli.conf")
+	cpCfg, err := cpanel.NewCPanelConfig(cfgMap)
+	if err != nil {
+		log.Fatalf("failed to load cPanel config: %v", err)
+	}
 
-		var req struct {
-			Domain string `json:"domain"`
-			Key    string `json:"key"`
-			Value  string `json:"value"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&req)
-		if err != nil || req.Domain == "" || req.Key == "" || req.Value == "" {
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
+	type internalSetter struct{
+		cp *cpanel.CPanelConfig
+	}
 
-		cmd := exec.Command("/usr/local/bin/dns-proxy-cli", "set-txt", "--domain", req.Domain, "--key", req.Key, "--value", req.Value)
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			log.Printf("dns-proxy-cli error: %v, output: %s", err, string(output))
-			http.Error(w, string(output), http.StatusInternalServerError)
-			return
-		}
+	func (s *internalSetter) CreateTxtRecord(domain, key, value string) error {
+		return s.cp.CreateTxtRecord(domain, key, value)
+	}
 
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("TXT record set"))
-	})
+	setter := &internalSetter{cp: cpCfg}
+	http.HandleFunc("/set_txt", api.SetTxtHandler(apiToken, setter))
 
 	log.Println("dns-proxy API listening on :5000...")
 	log.Fatal(http.ListenAndServe(":5000", nil))
