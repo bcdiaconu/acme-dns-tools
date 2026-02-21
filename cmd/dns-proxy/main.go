@@ -6,10 +6,11 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"strings"
 
 	"dns-proxy/internal/api"
+	"dns-proxy/internal/config"
+	"dns-proxy/internal/cpanel"
 )
 
 func loadToken(path string) string {
@@ -39,19 +40,22 @@ func loadToken(path string) string {
 func main() {
 	apiToken := loadToken("/etc/acme-dns-tools/dns-proxy-api.conf")
 
-	// Adapter that implements api.TxtRecordSetter by calling the CLI
-	type cliSetter struct{}
-
-	func (c *cliSetter) CreateTxtRecord(domain, key, value string) error {
-		cmd := exec.Command("/usr/local/bin/dns-proxy-cli", "set-txt", "--domain", domain, "--key", key, "--value", value)
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf("dns-proxy-cli error: %v, output: %s", err, string(output))
-		}
-		return nil
+	// Adapter that implements api.TxtRecordSetter by using internal cPanel client
+	cfgMap := config.LoadConfig("/etc/acme-dns-tools/dns-proxy-cli.conf")
+	cpCfg, err := cpanel.NewCPanelConfig(cfgMap)
+	if err != nil {
+		log.Fatalf("failed to load cPanel config: %v", err)
 	}
 
-	setter := &cliSetter{}
+	type internalSetter struct{
+		cp *cpanel.CPanelConfig
+	}
+
+	func (s *internalSetter) CreateTxtRecord(domain, key, value string) error {
+		return s.cp.CreateTxtRecord(domain, key, value)
+	}
+
+	setter := &internalSetter{cp: cpCfg}
 	http.HandleFunc("/set_txt", api.SetTxtHandler(apiToken, setter))
 
 	log.Println("dns-proxy API listening on :5000...")
