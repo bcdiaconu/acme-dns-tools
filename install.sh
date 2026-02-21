@@ -73,12 +73,21 @@ build() {
 
 install_bins() {
   info "Installing binaries to $INSTALL_DIR..."
-  cp -f dns-proxy-api "$INSTALL_DIR/dns-proxy-api"
-  chmod +x "$INSTALL_DIR/dns-proxy-api"
+
+  # Ensure we operate from the repository root (script may be invoked from elsewhere)
+  TOPDIR="$(cd "$(dirname "$0")" && pwd)"
+
+  if [ ! -f "$TOPDIR/dns-proxy-api" ]; then
+    die "Built binary not found: $TOPDIR/dns-proxy-api"
+  fi
+  if [ ! -f "$TOPDIR/dns-proxy-cli" ]; then
+    die "Built binary not found: $TOPDIR/dns-proxy-cli"
+  fi
+
+  install -m 0755 -D "$TOPDIR/dns-proxy-api" "$INSTALL_DIR/dns-proxy-api"
   ok "Installed: $INSTALL_DIR/dns-proxy-api"
 
-  cp -f dns-proxy-cli "$INSTALL_DIR/dns-proxy-cli"
-  chmod +x "$INSTALL_DIR/dns-proxy-cli"
+  install -m 0755 -D "$TOPDIR/dns-proxy-cli" "$INSTALL_DIR/dns-proxy-cli"
   ok "Installed: $INSTALL_DIR/dns-proxy-cli"
   echo ""
 }
