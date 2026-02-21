@@ -102,7 +102,7 @@ install_configs() {
 
 # --- DNS management API (existing) ---
 # Bearer token for the /set_txt endpoint (used by certbot hooks on remote hosts)
-API_KEY=REPLACE_WITH_RANDOM_API_KEY
+DNS_RESOLVER_API_TOKEN=REPLACE_WITH_API_KEY_FROM_DNS_RESOLVER
 
 # --- cPanel credentials (used internally by dns-proxy-cli) ---
 # These are only needed if dns-proxy-cli is invoked by the API process.
@@ -290,7 +290,7 @@ summary() {
   echo ""
   if grep -q 'REPLACE_WITH_' "$API_CONF" 2>/dev/null || grep -q 'YOUR_' "$CLI_CONF" 2>/dev/null; then
     echo "  ⚠️  NEXT STEPS:"
-    echo "  1. Edit $API_CONF  — set API_KEY, CERT_BEARER_TOKEN, CERT_DNS_ALLOWLIST"
+    echo "  1. Edit $API_CONF  — set DNS_RESOLVER_API_TOKEN, CERT_BEARER_TOKEN, CERT_DNS_ALLOWLIST"
     echo "  2. Edit $CLI_CONF  — set cpanel_url, cpanel_user, cpanel_apikey"
     echo "  3. Start the service:"
     case "$INIT_SYSTEM" in

@@ -17,7 +17,7 @@ Create a config file for each app:
 - For the HTTP API (`dns-proxy-api`): `/etc/acme-dns-tools/dns-proxy-api.conf`
 
   ```ini
-  API_KEY=your_api_key_here
+  DNS_RESOLVER_API_TOKEN=your_api_token_here
   ```
 
 - For the CLI (`dns-proxy-cli`): `/etc/dns-proxy-cli.conf`
@@ -28,7 +28,7 @@ Create a config file for each app:
   cpanel_apikey=cpanel_api_token
   ```
 
-- `API_KEY`: The Bearer token required for API requests (only for API)
+- `DNS_RESOLVER_API_TOKEN`: The Bearer token required for API requests (only for API)
 - `cpanel_url`, `cpanel_user`, `cpanel_apikey`: cPanel credentials (only for CLI)
 
 ## Build
